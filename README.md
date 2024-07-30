@@ -73,3 +73,16 @@ This project utilizes an ESP8266 microcontroller to create a Wake-On-LAN (WOL) s
 - ESP8266WiFi library
 - WiFiUdp library
 - ESP8266Ping library
+## Troubleshooting
+
+### Common Issues
+
+- **WiFi Connection Issues**: If you are experiencing problems connecting to WiFi, ensure that your WiFi credentials are correct and that the ESP8266 is within range of your router. Also, verify that the WiFi network is functioning properly.
+
+- **Blynk Connection Issues**: If the ESP8266 is unable to connect to the Blynk server, check that the Blynk authentication token is correctly configured and that the Blynk server is accessible from your network.
+
+- **Magic Packet Not Working**: If the Wake-On-LAN magic packet is not waking up the target device, ensure that the MAC address and IP address of the device are correctly set. Additionally, make sure that Wake-On-LAN is enabled in the BIOS settings and network adapter settings of the target device.
+
+### Error Handling
+
+In case you encounter errors or issues not covered above, please feel free to reach out for support. We apologize for any inconvenience caused by these issues and appreciate your patience as we work to address them. Contributions and feedback are always welcome to help improve the project.
