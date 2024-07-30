@@ -4,17 +4,17 @@
 #include <ESP8266Ping.h>
 
 #ifndef BLYNK_TEMPLATE_ID
-#define BLYNK_TEMPLATE_ID "TMPL6nWnE8br_"
+#define BLYNK_TEMPLATE_ID "YOUR_BLYNK_TEMPLATE_ID"
 #endif
 #ifndef BLYNK_TEMPLATE_NAME
 #define BLYNK_TEMPLATE_NAME "WOL Server"
 #define BLYNK_PRINT Serial
 #endif
 
-const char auth[] = "vLIUU3Alzcpa_lqUGCBYkoekUM0SvrXl";
-const char ssid[] = "HOME65_2.4Gz";
-const char pass[] = "59454199";
-const char* host = "192.168.1.120";
+const char auth[] = "YOUR_AUTH"; //Authentication in Blynk server
+const char ssid[] = "WiFi name for ESP8266 internet connection"; //Your ssid to connect to the internet
+const char pass[] = "YOU WiFi Password"; //Your wifi password
+const char* host = "IP WOL device"; //You must set a static IP that does not change, such as 192.168.1.120. When you turn on the computer again, it will be the same IP.
 const uint16_t port = 8080;
 
 bool shutdownCommand = false;
