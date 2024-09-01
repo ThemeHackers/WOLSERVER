@@ -1,88 +1,72 @@
-# ESP8266-based Wake-On-LAN (WOL) Server
+# ESP8266 Wake-On-LAN (WOL) Server with Blynk
 
-This project utilizes an ESP8266 microcontroller to create a Wake-On-LAN (WOL) server, which can be controlled via the Blynk app. The server can wake up a specified device on your network and provide real-time monitoring and control.
+This project sets up an ESP8266 as a Wake-On-LAN (WOL) server that interacts with the Blynk IoT platform. The server can send a magic packet to wake up a Windows device on the network, check the device's status via ping, and manage the server's state, including restart and shutdown functionalities.
 
-## Code Explanation
+## Features
 
-### Libraries
-- **ESP8266WiFi**: Manages WiFi connectivity for the ESP8266.
-- **BlynkSimpleEsp8266**: Allows integration with the Blynk app for remote control and monitoring.
-- **WiFiUdp**: Provides UDP communication capabilities.
-- **ESP8266Ping**: Allows the ESP8266 to send ping requests and measure response time.
+- **Wake-On-LAN Functionality**: Sends a magic packet to wake up a specific device on the local network.
+- **Ping Monitoring**: Pings a specified DNS server (default: `8.8.4.4`) and a remote server (`1.1.1.1`) to check network connectivity and device status.
+- **Blynk Integration**: Displays real-time server status and controls the server through the Blynk app.
+- **Automatic Reconnection**: Attempts to reconnect to Wi-Fi and Blynk if the connection is lost.
+- **LED Indicator**: An LED connected to the ESP8266 blinks to indicate various states like connection status, WOL packet sent, etc.
+- **Restart and Shutdown Control**: The server can be restarted or send a shutdown command to the target device via Blynk.
 
-### Definitions
-- **BLYNK_TEMPLATE_ID, BLYNK_TEMPLATE_NAME**: Define the Blynk template ID and name.
-- **auth**: Authentication token for connecting to the Blynk server.
-- **ssid, pass**: Credentials for connecting the ESP8266 to your WiFi network.
-- **host, port**: IP address and port number of the target device for sending shutdown commands.
-- **ip, gateway, bcastAddr, subnet, dns, server_ip, device_ip_windows**: Network configuration details, including IP addresses and subnet mask.
-- **macAddr_windows**: MAC address of the target device for the Wake-On-LAN packet.
+## Hardware Requirements
 
-### Pins
-- **STATE_PIN**: Virtual pin for device status.
-- **WAKEONLAN_PIN**: Virtual pin for the Wake-On-LAN button.
-- **PING_TIME_PIN**: Virtual pin for displaying ping time.
-- **RSSI_PIN**: Virtual pin for displaying WiFi signal strength.
-- **RESTART_PIN**: Virtual pin for restarting the ESP8266.
-- **LED_PIN**: GPIO pin for status LED.
-- **PING_VIRTUAL_PIN**: Virtual pin for displaying ping time of a server.
-- **SHUTDOWN_PIN**: Virtual pin for sending a shutdown command.
+- **ESP8266 Module**: A microcontroller with built-in Wi-Fi capabilities.
+- **LED**: Connected to GPIO pin 16, used as an indicator for various statuses.
+- **Blynk App**: A Blynk account and a corresponding app project with virtual pins configured.
 
-### Variables and Structures
-- **WOLServerState**: Structure to store the current state of the WOL server, including online status, boot time, ping time, and LED status.
-- **currentState**: Instance of `WOLServerState` to manage and track server state.
+## Software Requirements
 
-### Functions
+- **Arduino IDE**: With the ESP8266 board manager installed.
+- **Blynk Library**: Installed via Arduino Library Manager.
+- **ESP8266Ping Library**: For ping functionality.
+- **WiFiUdp Library**: For sending UDP packets (Magic Packet).
 
-- **setup()**: Initializes the ESP8266, connects to WiFi and Blynk, and sets up UDP communication for sending Wake-On-LAN packets.
-  - **connectWiFi()**: Connects to the WiFi network and handles reconnection if necessary.
-  - **connectBlynk()**: Connects to the Blynk server and handles reconnection if needed.
-  - **buildMagicPacket()**: Constructs the Wake-On-LAN magic packet to wake the target device.
+## Configuration
 
-- **loop()**: Main function that runs continuously.
-  - Reconnects to WiFi and Blynk if disconnected.
-  - Checks and updates the ping time and device status.
-  - Sends shutdown commands if requested.
-  - Updates the LED state based on the current server status.
+1. **Blynk Authentication**: Replace the `auth[]` string with your Blynk authentication token.
+2. **Wi-Fi Credentials**: Update the `ssid[]` and `pass[]` with your Wi-Fi network's SSID and password.
+3. **Device IP and MAC Address**: Configure the IP address and MAC address of the target Windows device you wish to wake up.
+4. **Local IP Configuration**: Set the ESP8266's static IP, subnet mask, gateway, and DNS server.
 
-- **checkPing()**: Sends a ping request to a server and updates the ping time displayed in the Blynk app.
+## Blynk Virtual Pins
 
-- **sendToTerminal()**: Sends a status message to the Blynk terminal widget, including device information, boot time, ping time, and WiFi RSSI.
+- `V0` - Server state (Online/Offline).
+- `V1` - Wake-On-LAN button.
+- `V2` - Ping time to DNS server.
+- `V3` - Wi-Fi RSSI (Signal Strength).
+- `V4` - Terminal widget for debugging and status messages.
+- `V5` - Ping time to `1.1.1.1`.
+- `V6` - Shutdown button.
+- `V7` - Restart button.
 
-- **buildMagicPacket()**: Generates the magic packet used for Wake-On-LAN by filling it with the MAC address of the target device.
+## Usage
 
-- **blinkLED(int times, int interval)**: Blinks the status LED a specified number of times with a given interval.
+1. **Setup**: Upload the code to your ESP8266 module using the Arduino IDE.
+2. **Blynk App**: Create a Blynk project with the virtual pins as described above. Link the project to your ESP8266 using the authentication token.
+3. **Operation**:
+   - Use the Blynk app to monitor the ESP8266's status.
+   - Press the WOL button to send a magic packet and wake up the target device.
+   - Monitor the ping times to ensure network connectivity.
+   - Restart or shut down the ESP8266 server via the Blynk app.
 
-### Blynk Virtual Pin Handlers
+## Code Overview
 
-- **BLYNK_READ(STATE_PIN)**: Reads the device status and updates the virtual pin with the device's online status, boot time, and ping time. Updates button labels based on the current state.
+- **`setup()`**: Initializes Wi-Fi, Blynk, and UDP for WOL. It also starts the LED indicator and checks connections.
+- **`connectWiFi()`**: Handles Wi-Fi connection with automatic retries and restart if the connection fails.
+- **`connectBlynk()`**: Manages Blynk connection with retry logic and auto-restart upon failure.
+- **`loop()`**: Manages the main logic, including LED blinking, checking connections, sending pings, and handling Blynk commands.
+- **`sendMagicPacket()`**: Sends the WOL magic packet to the target device.
+- **`buildMagicPacket()`**: Constructs the magic packet based on the target device's MAC address.
+- **`checkPing()` and `pingServer()`**: Functions to ping the DNS and server IPs and report the results to Blynk.
 
-- **BLYNK_WRITE(WAKEONLAN_PIN)**: Handles the Wake-On-LAN button press event. Sends the magic packet if the target device is offline and updates the boot time.
+## Notes
 
-- **BLYNK_WRITE(RESTART_PIN)**: Restarts the ESP8266 when the restart button is pressed.
+- The ESP8266 will automatically restart if it fails to connect to Wi-Fi or Blynk after multiple attempts.
+- The `LED_PIN` is used to indicate the connection status and blink when the magic packet is sent.
 
-- **BLYNK_WRITE(SHUTDOWN_PIN)**: Sets the shutdown command flag when the shutdown button is pressed, triggering the shutdown command to be sent to the target device.
+## License
 
-## Hardware Required
-- ESP8266 (e.g., NodeMCU)
-- LED (optional, for status indication)
-
-## Software Required
-- Arduino IDE
-- Blynk library
-- ESP8266WiFi library
-- WiFiUdp library
-- ESP8266Ping library
-## Troubleshooting
-
-### Common Issues
-
-- **WiFi Connection Issues**: If you are experiencing problems connecting to WiFi, ensure that your WiFi credentials are correct and that the ESP8266 is within range of your router. Also, verify that the WiFi network is functioning properly.
-
-- **Blynk Connection Issues**: If the ESP8266 is unable to connect to the Blynk server, check that the Blynk authentication token is correctly configured and that the Blynk server is accessible from your network.
-
-- **Magic Packet Not Working**: If the Wake-On-LAN magic packet is not waking up the target device, ensure that the MAC address and IP address of the device are correctly set. Additionally, make sure that Wake-On-LAN is enabled in the BIOS settings and network adapter settings of the target device.
-
-### Error Handling
-
-In case you encounter errors or issues not covered above, please feel free to reach out for support. We apologize for any inconvenience caused by these issues and appreciate your patience as we work to address them. Contributions and feedback are always welcome to help improve the project.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
