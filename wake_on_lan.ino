@@ -19,7 +19,7 @@ const IPAddress gateway(192, 168, 1, 1);
 const IPAddress subnet(255, 255, 255, 0);
 const IPAddress dns(8, 8, 8, 8);
 const IPAddress bcastAddr(192, 168, 1, 255);
-byte macAddr_windows[6] = {0x00, 0xE0, 0x4C, 0x18, 0x87, 0xBA};
+byte macAddr_windows[6] = {0x00, 0xE0, 0x4C, 0x18, 0x87, 0xBA}; 
 
 #define MAGIC_PACKET_LENGTH 102
 #define PORT_WAKEONLAN 9
